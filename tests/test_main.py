@@ -1,24 +1,9 @@
 import io
-import importlib
-import sys
 import unittest
 from contextlib import redirect_stdout
-from types import ModuleType
 from unittest.mock import MagicMock, patch
 
-
-def load_main_module():
-    dotenv_module = ModuleType("dotenv")
-    dotenv_module.load_dotenv = MagicMock()
-    sys.modules["dotenv"] = dotenv_module
-
-    neo4j_module = ModuleType("neo4j")
-    neo4j_module.GraphDatabase = MagicMock()
-    sys.modules["neo4j"] = neo4j_module
-
-    if "main" in sys.modules:
-        return importlib.reload(sys.modules["main"])
-    return importlib.import_module("main")
+from tests.utils import load_main_module
 
 
 main_module = load_main_module()
@@ -212,6 +197,38 @@ class TestMainFunction(unittest.TestCase):
                 "number": 1,
                 "message": "Conexion exitosa con Neo4j",
             }
+        )
+        fake_manager.create_user.assert_called_once_with(name="Alice", user_id="1")
+        fake_manager.create_movie.assert_called_once_with(
+            title="The Matrix",
+            movie_id="100",
+            year=1999,
+            imdb_id="tt0133093",
+        )
+        fake_manager.create_genre.assert_called_once_with(name="Action")
+        fake_manager.create_person.assert_called_once_with(
+            name="Keanu Reeves",
+            tmdb_id="200",
+            born=1964,
+        )
+        fake_manager.create_rated_relationship.assert_called_once_with(
+            user_id="1",
+            movie_id="100",
+            rating=5.0,
+            timestamp=1712534400,
+        )
+        fake_manager.create_acted_in_relationship.assert_called_once_with(
+            person_id="200",
+            movie_id="100",
+            role="Neo",
+        )
+        fake_manager.create_directed_relationship.assert_called_once_with(
+            person_id="200",
+            movie_id="100",
+        )
+        fake_manager.create_in_genre_relationship.assert_called_once_with(
+            movie_id="100",
+            genre_name="Action",
         )
         fake_session.close.assert_called_once()
         fake_manager.close_driver.assert_called_once()
