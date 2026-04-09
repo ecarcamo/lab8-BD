@@ -2,14 +2,14 @@ import time
 from main import Neo4jManager
 
 def poblar_usuarios_y_ratings(manager: Neo4jManager) -> None:
-    print("Iniciando inserción de datos (Persona 2)...")
+    print("Iniciando inserción de datos..")
     
     # Creacion 4 películas base para que tengan contenido que calificar
     peliculas = [
-        {"id": "m1", "title": "The Matrix", "year": 1999, "plot": "A computer hacker learns about reality..."},
-        {"id": "m2", "title": "Inception", "year": 2010, "plot": "A thief who steals corporate secrets through dreams."},
-        {"id": "m3", "title": "Interstellar", "year": 2014, "plot": "Explorers travel through a wormhole in space."},
-        {"id": "m4", "title": "The Dark Knight", "year": 2008, "plot": "Menace known as the Joker wreaks havoc."}
+        {"id": "1", "title": "The Matrix", "year": 1999, "plot": "A computer hacker learns about reality..."},
+        {"id": "2", "title": "Inception", "year": 2010, "plot": "A thief who steals corporate secrets through dreams."},
+        {"id": "3", "title": "Interstellar", "year": 2014, "plot": "Explorers travel through a wormhole in space."},
+        {"id": "4", "title": "The Dark Knight", "year": 2008, "plot": "Menace known as the Joker wreaks havoc."}
     ]
     for p in peliculas:
         manager.create_movie(title=p["title"], movie_id=p["id"], year=p["year"], plot=p["plot"])
@@ -17,34 +17,38 @@ def poblar_usuarios_y_ratings(manager: Neo4jManager) -> None:
 
     # Creacion 5 usuarios
     usuarios = [
-        {"id": "u1", "name": "Alice"},
-        {"id": "u2", "name": "Bob"},
-        {"id": "u3", "name": "Charlie"},
-        {"id": "u4", "name": "Diana"},
-        {"id": "u5", "name": "Eve"}
+        {"id": "1", "name": "Alice"},
+        {"id": "2", "name": "Bob"},
+        {"id": "3", "name": "Charlie"},
+        {"id": "4", "name": "Diana"},
+        {"id": "5", "name": "Eve"},
+        {"id": "6", "name": "Ricardo"},
     ]
     for u in usuarios:
         manager.create_user(name=u["name"], user_id=u["id"])
-    print("5 Usuarios creados.")
+    print("6 Usuarios creados.")
 
     # Creacion de ratings
     timestamp_actual = int(time.time())
     ratings = [
-        # Alice (u1)
-        {"user": "u1", "movie": "m1", "rating": 5.0},
-        {"user": "u1", "movie": "m2", "rating": 4.5},
-        # Bob (u2)
-        {"user": "u2", "movie": "m2", "rating": 5.0},
-        {"user": "u2", "movie": "m3", "rating": 4.0},
-        # Charlie (u3)
-        {"user": "u3", "movie": "m3", "rating": 3.5},
-        {"user": "u3", "movie": "m4", "rating": 4.5},
-        # Diana (u4)
-        {"user": "u4", "movie": "m1", "rating": 4.0},
-        {"user": "u4", "movie": "m4", "rating": 5.0},
-        # Eve (u5)
-        {"user": "u5", "movie": "m1", "rating": 3.0},
-        {"user": "u5", "movie": "m3", "rating": 5.0},
+        # Alice 
+        {"user": "1", "movie": "1", "rating": 5.0},
+        {"user": "1", "movie": "2", "rating": 4.5},
+        # Bob 
+        {"user": "2", "movie": "2", "rating": 5.0},
+        {"user": "2", "movie": "3", "rating": 4.0},
+        # Charlie 
+        {"user": "3", "movie": "3", "rating": 3.5},
+        {"user": "3", "movie": "4", "rating": 4.5},
+        # Diana 
+        {"user": "4", "movie": "1", "rating": 4.0},
+        {"user": "4", "movie": "4", "rating": 5.0},
+        # Eve 
+        {"user": "5", "movie": "1", "rating": 3.0},
+        {"user": "5", "movie": "3", "rating": 5.0},
+        # Ricardo 
+        {"user": "6", "movie": "2", "rating": 4.5},
+        {"user": "6", "movie": "4", "rating": 4.0},
     ]
 
     for r in ratings:
@@ -55,7 +59,7 @@ def poblar_usuarios_y_ratings(manager: Neo4jManager) -> None:
             timestamp=timestamp_actual
         )
     print("Relaciones RATED creadas con éxito.")
-    print("¡Poblado de Persona 2 completado exitosamente!")
+    print("¡Poblado completado exitosamente!")
 
 if __name__ == "__main__":
     manager = Neo4jManager()
