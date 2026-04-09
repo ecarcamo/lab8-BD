@@ -204,6 +204,108 @@ class Neo4jManager:
         self.driver.close()
 
 
+    #Funciones de Busqueda
+    def find_movie(self, movie_id: str) -> dict | None:
+        session = self.open_session()
+        query = """
+        MATCH (movie:Movie {movieId: $movie_id})
+        RETURN movie.title AS title,
+               movie.movieId AS movieId,
+               movie.year AS year,
+               movie.plot AS plot
+        """
+        try:
+            record = session.run(query, movie_id=movie_id).single()
+        finally:
+            session.close()
+
+        if record is None:
+            return None
+
+        return {
+            "title": record["title"],
+            "movieId": record["movieId"],
+            "year": record["year"],
+            "plot": record["plot"],
+        }
+    
+    def find_user(self, user_id: str) -> dict | None:
+        session = self.open_session()
+        query = """
+        MATCH (user:User {userId: $user_id})
+        RETURN user.name AS name,
+               user.userId AS userId
+        """
+        try:
+            record = session.run(query, user_id=user_id).single()
+        finally:
+            session.close()
+
+        if record is None:
+            return None
+
+        return {
+            "name": record["name"],
+            "userId": record["userId"],
+        }
+    
+    def find_user_movie_rating(self, user_id: str, movie_id: str) -> dict | None:
+        session = self.open_session()
+        query = """
+        MATCH (user:User {userId: $user_id})-[rated:RATED]->(movie:Movie {movieId: $movie_id})
+        RETURN user.name AS user_name,
+            user.userId AS user_id,
+            movie.title AS movie_title,
+            movie.movieId AS movie_id,
+            rated.rating AS rating,
+            rated.timestamp AS timestamp
+        """
+        try:
+            record = session.run(query, user_id=user_id, movie_id=movie_id).single()
+        finally:
+            session.close()
+
+        if record is None:
+            return None
+
+        return {
+            "user_name": record["user_name"],
+            "user_id": record["user_id"],
+            "movie_title": record["movie_title"],
+            "movie_id": record["movie_id"],
+            "rating": record["rating"],
+            "timestamp": record["timestamp"],
+        }
+    # Prints de busqueda 
+    def print_movie(self, movie):
+        if movie is None:
+            print("No se encontró la película.")
+            return
+        print("Se encontro la peli:")
+        print(f"Titulo: {movie['title']}")
+        print(f"ID: {movie['movieId']}")
+        print(f"Año: {movie['year']}")
+        print(f"Plot: {movie['plot']}")
+
+    def print_user(self, user):
+        if user is None:
+            print("No se encontró el usuario.")
+            return
+        print("Se encontro el usuario:")
+        print(f"Nombre: {user['name']}")
+        print(f"ID: {user['userId']}")
+
+    def print_user_movie_rating(self, result):
+        if result is None:
+            print("No se encontro la relacion entre el usuario y la pelicula")
+            return
+        print("Relacion RATED Encontrada:")
+        print(f"Usuario: {result['user_name']} (ID: {result['user_id']})")
+        print(f"Pelicula: {result['movie_title']} (ID: {result['movie_id']})")
+        print(f"Rating: {result['rating']}")
+        print(f"Timestamp: {result['timestamp']}")
+
+
 def main() -> None:
     manager = Neo4jManager()
     session = manager.open_session()
