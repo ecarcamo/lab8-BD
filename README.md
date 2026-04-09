@@ -105,6 +105,10 @@ La siguiente imagen muestra el resultado creado en Neo4j Browser:
 
 <img width="1337" height="589" alt="screenshot-2026-04-08_00-57-16" src="https://github.com/user-attachments/assets/d73940fc-de92-4c65-bc61-aaf746f10ad3" />
 
+## Insertar 5 usuarios con al menos 2 ratings
+
+En el archivo [populate.py] se implementó la función `poblar_usuarios_y_ratings` que inserta 5 usuarios con al menos 2 ratings cada uno.
+
 ## Cómo ejecutar el proyecto
 
 1. Crear y activar el entorno virtual.

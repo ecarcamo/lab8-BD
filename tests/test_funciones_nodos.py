@@ -64,8 +64,8 @@ class TestFuncionesNodos(unittest.TestCase):
                 title="The Matrix",
                 movie_id="m1",
                 year=1999,
-                imdb_id="tt0133093",
                 plot="Sci-fi",
+                extra="Test",
             )
 
         query = mock_run_write_query.call_args.args[0]
@@ -78,8 +78,8 @@ class TestFuncionesNodos(unittest.TestCase):
                     "title": "The Matrix",
                     "movieId": "m1",
                     "year": 1999,
-                    "imdbId": "tt0133093",
                     "plot": "Sci-fi",
+                    "extra": "Test",
                 },
             },
         )

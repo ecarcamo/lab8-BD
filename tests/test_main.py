@@ -203,7 +203,7 @@ class TestMainFunction(unittest.TestCase):
             title="The Matrix",
             movie_id="100",
             year=1999,
-            imdb_id="tt0133093",
+            plot="A computer hacker learns from mysterious rebels about the true nature of his reality...",
         )
         fake_manager.create_genre.assert_called_once_with(name="Action")
         fake_manager.create_person.assert_called_once_with(

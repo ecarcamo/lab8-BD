@@ -84,14 +84,14 @@ class Neo4jManager:
         title: str,
         movie_id: str,
         year: int,
-        imdb_id: str,
+        plot: str,
         **extra_properties: Any,
     ) -> None:
         properties = {
             "title": title,
             "movieId": movie_id,
             "year": year,
-            "imdbId": imdb_id,
+            "plot": plot,
             **extra_properties,
         }
         query = """
@@ -217,7 +217,7 @@ def main() -> None:
             title="The Matrix",
             movie_id="100",
             year=1999,
-            imdb_id="tt0133093",
+            plot="A computer hacker learns from mysterious rebels about the true nature of his reality...",
         )
         manager.create_genre(name="Action")
         manager.create_person(name="Keanu Reeves", tmdb_id="200", born=1964)
