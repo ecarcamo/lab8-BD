@@ -205,17 +205,17 @@ class Neo4jManager:
 
 
     #Funciones de Busqueda
-    def find_movie(self, movie_id: str) -> dict | None:
+    def find_movie(self, title: str) -> dict | None:
         session = self.open_session()
         query = """
-        MATCH (movie:Movie {movieId: $movie_id})
+        MATCH (movie:Movie {title: $title})
         RETURN movie.title AS title,
                movie.movieId AS movieId,
                movie.year AS year,
                movie.plot AS plot
         """
         try:
-            record = session.run(query, movie_id=movie_id).single()
+            record = session.run(query, title=title).single()
         finally:
             session.close()
 
@@ -229,15 +229,15 @@ class Neo4jManager:
             "plot": record["plot"],
         }
     
-    def find_user(self, user_id: str) -> dict | None:
+    def find_user(self, user_name: str) -> dict | None:
         session = self.open_session()
         query = """
-        MATCH (user:User {userId: $user_id})
+        MATCH (user:User {name: $user_name})
         RETURN user.name AS name,
                user.userId AS userId
         """
         try:
-            record = session.run(query, user_id=user_id).single()
+            record = session.run(query, user_name=user_name).single()
         finally:
             session.close()
 
@@ -249,10 +249,10 @@ class Neo4jManager:
             "userId": record["userId"],
         }
     
-    def find_user_movie_rating(self, user_id: str, movie_id: str) -> dict | None:
+    def find_user_movie_rating(self, user_name: str, movie_title: str) -> dict | None:
         session = self.open_session()
         query = """
-        MATCH (user:User {userId: $user_id})-[rated:RATED]->(movie:Movie {movieId: $movie_id})
+        MATCH (user:User {name: $user_name})-[rated:RATED]->(movie:Movie {title: $movie_title})
         RETURN user.name AS user_name,
             user.userId AS user_id,
             movie.title AS movie_title,
@@ -261,7 +261,7 @@ class Neo4jManager:
             rated.timestamp AS timestamp
         """
         try:
-            record = session.run(query, user_id=user_id, movie_id=movie_id).single()
+            record = session.run(query, user_name=user_name, movie_title=movie_title).single()
         finally:
             session.close()
 
@@ -304,6 +304,52 @@ class Neo4jManager:
         print(f"Pelicula: {result['movie_title']} (ID: {result['movie_id']})")
         print(f"Rating: {result['rating']}")
         print(f"Timestamp: {result['timestamp']}")
+
+    def find_all_users(self) -> list[dict]:
+        session = self.open_session()
+        query = """
+        MATCH (user:User)
+        RETURN user.name AS name,
+               user.userId AS userId
+        """
+        try:
+            records = session.run(query).values()
+        finally:
+            session.close()
+
+        return [{"name": record[0], "userId": record[1]} for record in records]
+    
+    def find_all_movies(self) -> list[dict]:
+        session = self.open_session()
+        query = """
+        MATCH (movie:Movie)
+        RETURN movie.title AS title,
+               movie.movieId AS movieId,
+                movie.year AS year,
+                movie.plot AS plot
+        """
+        try:
+            records = session.run(query).values()
+        finally:
+            session.close()
+
+        return [
+            {
+                "title": record[0],
+                "movieId": record[1],
+                "year": record[2],
+                "plot": record[3],
+            }
+            for record in records
+        ]
+    
+    def clear_database(self) -> None:
+        session = self.open_session()
+        query = "MATCH (n) DETACH DELETE n"
+        try:
+            session.run(query)
+        finally:
+            session.close()
 
 
 def main() -> None:
