@@ -107,7 +107,23 @@ La siguiente imagen muestra el resultado creado en Neo4j Browser:
 
 ## Insertar 5 usuarios con al menos 2 ratings
 
-En el archivo [populate.py] se implementó la función `poblar_usuarios_y_ratings` que inserta 5 usuarios con al menos 2 ratings cada uno.
+En el archivo [populate.py](populate.py) se implementó la función `poblar_usuarios_y_ratings` que inserta 5 usuarios con al menos 2 ratings cada uno.
+
+![alt text](img/image.png)
+![alt text](img/image-1.png)
+![alt text](img/image-2.png)
+
+Vizualizado en AuraDB:
+![alt text](img/image-3.png)
+
+## 3. Implementar una función para encontrar un usuario, una película y un usuario con su relación rate a película. Deberá evidenciar el funcionamiento de dicha función.
+
+Se implementarion las funciones para buscar usuarios, peliculas y relaciones en el archivo [search.py](search.py)
+
+![alt text](img/image-4.png)
+
+Este es el resultado obtenido
+![alt text](img/image-5.png)
 
 ## Cómo ejecutar el proyecto
 
