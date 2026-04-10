@@ -174,16 +174,29 @@ class Neo4jManager:
             role=role,
         )
 
-    def create_directed_relationship(self, person_id: str, movie_id: str) -> None:
+    def create_directed_relationship(self, person_id: str, movie_id: str, role: str = None) -> None:
         self._require_node("Person", "tmdbId", person_id)
         self._require_node("Movie", "movieId", movie_id)
 
         query = """
         MATCH (person:Person {tmdbId: $person_id})
         MATCH (movie:Movie {movieId: $movie_id})
+        MERGE (person)-[directed:DIRECTED]->(movie)
+        """
+        if role is None:
+            query = """
+        MATCH (person:Person {tmdbId: $person_id})
+        MATCH (movie:Movie {movieId: $movie_id})
         MERGE (person)-[:DIRECTED]->(movie)
         """
-        self._run_write_query(query, person_id=person_id, movie_id=movie_id)
+            
+        parameters = {"person_id": person_id, "movie_id": movie_id}
+        
+        if role is not None:
+            query += "SET directed.role = $role"
+            parameters["role"] = role
+            
+        self._run_write_query(query, **parameters)
 
     def create_in_genre_relationship(self, movie_id: str, genre_name: str) -> None:
         self._require_node("Movie", "movieId", movie_id)
@@ -199,6 +212,90 @@ class Neo4jManager:
     def print_result(self, result: dict[str, str | int]) -> None:
         print(f"Numero: {result['number']}")
         print(f"Mensaje: {result['message']}")
+
+    def close_driver(self) -> None:
+        if self.driver is not None:
+            self.driver.close()
+
+    def find_all_users(self) -> list[dict[str, Any]]:
+        query = "MATCH (u:User) RETURN u"
+        session = self.open_session()
+        try:
+            records = session.run(query)
+            return [dict(record["u"]) for record in records]
+        finally:
+            session.close()
+
+    def find_all_movies(self) -> list[dict[str, Any]]:
+        query = "MATCH (m:Movie) RETURN m"
+        session = self.open_session()
+        try:
+            records = session.run(query)
+            return [dict(record["m"]) for record in records]
+        finally:
+            session.close()
+
+    def find_user(self, name: str) -> dict[str, Any] | None:
+        query = "MATCH (u:User {name: $name}) RETURN u"
+        session = self.open_session()
+        try:
+            record = session.run(query, name=name).single()
+            if record:
+                return dict(record["u"])
+            return None
+        finally:
+            session.close()
+            
+    def find_movie(self, title: str) -> dict[str, Any] | None:
+        query = "MATCH (m:Movie {title: $title}) RETURN m"
+        session = self.open_session()
+        try:
+            record = session.run(query, title=title).single()
+            if record:
+                return dict(record["m"])
+            return None
+        finally:
+            session.close()
+
+    def find_user_movie_rating(self, user_name: str, movie_title: str) -> dict[str, Any] | None:
+        query = """
+        MATCH (u:User {name: $user_name})-[r:RATED]->(m:Movie {title: $movie_title})
+        RETURN u, r, m
+        """
+        session = self.open_session()
+        try:
+            record = session.run(query, user_name=user_name, movie_title=movie_title).single()
+            if record:
+                return {
+                    "user": dict(record["u"]),
+                    "rating": dict(record["r"]),
+                    "movie": dict(record["m"])
+                }
+            return None
+        finally:
+            session.close()
+
+    def print_user(self, user: dict[str, Any] | None) -> None:
+        if user:
+            print(f"User: {user.get('name', 'N/A')} (ID: {user.get('userId', 'N/A')})")
+        else:
+            print("Usuario no encontrado.")
+
+    def print_movie(self, movie: dict[str, Any] | None) -> None:
+        if movie:
+            print(f"Movie: {movie.get('title', 'N/A')} ({movie.get('year', 'N/A')}) - ID {movie.get('movieId', 'N/A')}")
+        else:
+            print("Película no encontrada.")
+
+    def print_user_movie_rating(self, result: dict[str, Any] | None) -> None:
+        if result:
+            user = result["user"].get("name", "N/A")
+            movie = result["movie"].get("title", "N/A")
+            rating = result["rating"].get("rating", "N/A")
+            timestamp = result["rating"].get("timestamp", "N/A")
+            print(f"{user} calificó '{movie}' con {rating} (Timestamp: {timestamp})")
+        else:
+            print("No se encontró una relación de calificación para esos parámetros.")
 
     def close_driver(self) -> None:
         self.driver.close()
