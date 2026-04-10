@@ -112,7 +112,7 @@ def populate_custom_graph(manager: Neo4jManager) -> None:
     print("Todas las relaciones creadas exitosamente. Grafo construido de acuerdo al inciso!")
 
 if __name__ == "__main__":
-    manager = Neo4jManager()
+    manager = Neo4jManager(suffix="2")
     try:
         populate_custom_graph(manager)
     except Exception as e:

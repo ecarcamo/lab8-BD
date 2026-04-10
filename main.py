@@ -6,12 +6,12 @@ from neo4j import GraphDatabase
 
 
 class Neo4jManager:
-    def __init__(self) -> None:
+    def __init__(self, suffix: str = "") -> None:
         load_dotenv()
-        self.uri = self._get_env_var("NEO4J_URI")
-        self.username = self._get_env_var("NEO4J_USERNAME")
-        self.password = self._get_env_var("NEO4J_PASSWORD")
-        self.database = self._get_env_var("NEO4J_DATABASE")
+        self.uri = self._get_env_var(f"NEO4J_URI{suffix}")
+        self.username = self._get_env_var(f"NEO4J_USERNAME{suffix}")
+        self.password = self._get_env_var(f"NEO4J_PASSWORD{suffix}")
+        self.database = self._get_env_var(f"NEO4J_DATABASE{suffix}")
         self.driver = self.create_driver()
 
     def _get_env_var(self, key: str) -> str:
